@@ -11,35 +11,40 @@ workspace "Pollen"
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 project "Pollen"
-    kind "StaticLib"
+    location "Pollen"
+    kind "SharedLib"
     language "C++"
-    cppdialect "C++17"
-    staticruntime "off"
-
-    targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
-    objdir ("%{wks.location}/bin-obj/" .. outputdir .. "/%{prj.name}")
+    targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+    objdir ("bin-obj/" .. outputdir .. "/%{prj.name}")
 
     files
 	{
-		"Pollen/src/**.h",
-		"Pollen/src/**.cpp"
+		"%{prj.name}/src/**.h",
+		"%{prj.name}/src/**.cpp"
 	}
     includedirs
     {
-        "%{wks.location}/Pollen/external/spdlog/include",
+        "%{prj.name}/external/spdlog/include"
     }
+
     filter "system:windows"
+        cppdialect "C++17"
+        staticruntime "On"
         systemversion "latest"
         defines {
             "POLLEN_PLATFORM_WINDOWS",
             "POLLEN_BUILD_DLL"
+        }
+        postbuildcommands
+        {
+            ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox")
         }
 
 
     filter "configurations:Debug"
         defines "POLLEN_DEBUG"
         runtime "Debug"
-        symbols "on"
+        symbols "On"
 
         links
         {
@@ -48,7 +53,7 @@ project "Pollen"
     filter "configurations:Release"
         defines "POLLEN_RELEASE"
         runtime "Release"
-        optimize "on"
+        optimize "On"
 
         links
         {
@@ -57,7 +62,7 @@ project "Pollen"
     filter "configurations:Dist"
         defines "POLLEN_DIST"
         runtime "Release"
-        optimize "on"
+        optimize "On"
 
         links
         {
@@ -65,18 +70,17 @@ project "Pollen"
 
 
 project "Sandbox"
+    location "Sandbox"
     kind "ConsoleApp"
     language "C++"
-    cppdialect "C++17"
-    staticruntime "off"
 
-    targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
-    objdir ("%{wks.location}/bin-obj/" .. outputdir .. "/%{prj.name}")
+    targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+    objdir ("bin-obj/" .. outputdir .. "/%{prj.name}")
 
     files
     {
-        "Sandbox/src/**.h",
-        "Sandbox/src/**.cpp"
+        "%{prj.name}/src/**.h",
+        "%{prj.name}/src/**.cpp"
     }
 
     includedirs
@@ -91,11 +95,12 @@ project "Sandbox"
     }
 
     filter "system:windows"
+        cppdialect "C++17"
         systemversion "latest"
+        staticruntime "On"
         defines
         {
-            "POLLEN_PLATFORM_WINDOWS",
-            "POLLEN_BUILD_DLL"
+            "POLLEN_PLATFORM_WINDOWS"
         }
 
     filter "configurations:Debug"
