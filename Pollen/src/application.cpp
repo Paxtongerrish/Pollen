@@ -16,7 +16,6 @@ namespace pollen
 	{
 		std::cout << "App.Run\n";
 		while (true) {
-			std::cout << "tick\n";
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 
